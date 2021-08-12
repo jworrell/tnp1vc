@@ -32,10 +32,6 @@ namespace tnp1 {
 		uint64_t localMaxNOffset;
 		uint64_t localMaxIterations;
 
-		for (uint64_t idx = 0; idx < WORK_CHUNK_SIZE; ++idx) {
-			localCache[idx] = 1000;
-		}
-
 		while (programRunning.load(std::memory_order::memory_order_relaxed)) {
 			localWriteBase = globalWriteBase.fetch_add(WORK_CHUNK_SIZE, std::memory_order::memory_order_acq_rel);
 			localReadLimit = globalReadLimit.load(std::memory_order::memory_order_acquire);
@@ -80,7 +76,6 @@ namespace tnp1 {
 			if (localMaxIterations > globalMaxIterations) {
 				globalMaxIterations = localMaxIterations;
 				globalMaxN = localWriteBase + localMaxNOffset;
-				//std::cout << "new max iterations " << globalMaxIterations << " for n " << globalMaxN << std::endl;
 			}
 
 			if (localWriteBase + WORK_CHUNK_SIZE < CACHE_SIZE) {
